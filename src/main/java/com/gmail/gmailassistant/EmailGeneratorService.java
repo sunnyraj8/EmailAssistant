@@ -12,10 +12,11 @@ public class EmailGeneratorService {
 
     private final WebClient webClient;
     private final String apikey;
-
+//    @Value(("${"))
+//    private String urlex ;
     public EmailGeneratorService(WebClient.Builder webClientBuilder,
-                                 @Value("@{gemini.api.url}") String baseUrl,
-                                 @Value("@{gemini.api.key}") String geminiApiKey) {
+                                 @Value("${gemini.api.url}") String baseUrl,
+                                 @Value("${gemini.api.key}") String geminiApiKey) {
         this.webClient = webClientBuilder.baseUrl(baseUrl).build();
         this.apikey = geminiApiKey;
     }
@@ -40,8 +41,10 @@ public class EmailGeneratorService {
         String response=webClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path("/v1beta/models/gemini-2.5-flash:generateContent")
+                        //we can send the api key through query param itself , but recommende is header.
+                        //.queryParam("key", apikey)
                         .build())
-                .header("x-goog-api-key: $GEMINI_API_KEY",apikey)
+                .header("x-goog-api-key",apikey)
                 .header("Content-Type","application/json")
                 .bodyValue(requestBody)
                 .retrieve()
